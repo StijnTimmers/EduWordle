@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduWordle - Oud-Hollandsch Woordspel</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@600;700;800&family=Fredoka:wght@400;600&display=swap');
+        
+        body {
+            font-family: 'IM Fell English', Georgia, serif;
+            touch-action: manipulation;
+            background-color: #f5f0e6;
+            background-image: radial-gradient(#10375c 0.5px, transparent 0.5px), radial-gradient(#10375c 0.5px, #f5f0e6 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            background-opacity: 0.05;
+        }
+
+        .title-font {
+            font-family: 'Cinzel', serif;
+        }
+
+        .delft-tile {
+            box-shadow: 2px 3px 0px #0b2238;
+            border: 2px solid #10375c;
+        }
+
+        .tile {
+            transition: transform 0.15s ease-in-out, background-color 0.5s ease, border-color 0.5s ease;
+            backface-visibility: hidden;
+            box-shadow: 2px 2px 4px rgba(16, 55, 92, 0.15);
+        }
+
+        .tile.pop {
+            animation: pop 0.1s ease-in-out;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.12); }
+            100% { transform: scale(1); }
+        }
+
+        .tile.flip {
+            animation: flip 0.6s ease forwards;
+        }
+
+        @keyframes flip {
+            0% { transform: rotateX(0deg); }
+            50% { transform: rotateX(90deg); }
+            100% { transform: rotateX(0deg); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-12px); }
+            40%, 80% { transform: translateX(12px); }
+        }
+        
+        /* Win Animation Styles */
+        .tile.win-bounce {
+            animation: winBounce 0.8s ease-in-out;
+        }
+
+        @keyframes winBounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-[#f5f0e6] text-[#1c2d3d] min-h-screen flex flex-col justify-between items-center p-2 sm:p-4">
+
+    <!-- Header -->
+    <header class="w-full max-w-md flex justify-between items-center py-3 border-b-2 border-[#10375c]/30">
+        <button id="btn-stats" class="p-2 text-[#10375c] hover:text-[#00264d] transition" title="Statistieken">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+        </button>
+        <div class="text-center">
+            <h1 class="title-font text-2xl sm:text-3xl font-extrabold tracking-wider text-[#10375c] flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#003d7a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12V2a10 10 0 0 1 10 10Z"/><path d="M12 12H2a10 10 0 0 1 10-10Z"/><path d="M12 12V22a10 10 0 0 0 10-10Z"/><path d="M12 12H22a10 10 0 0 0-10 10Z"/></svg> EduWordle
+            </h1>
+            <p class="text-[11px] tracking-widest uppercase italic text-[#8c6d46] font-bold">Oud-Hollandsch Leer-Spel</p>
+        </div>
+        <button id="btn-help" class="p-2 text-[#10375c] hover:text-[#00264d] transition" title="Uitleg">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h12a2 2 0 0 0 2-2v-2H10v2a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v3h4"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/></svg>
+        </button>
+    </header>
+
+    <!-- Info Bar / Hint section -->
+    <div class="w-full max-w-md my-2 flex flex-col items-center gap-2">
+        <div class="flex items-center gap-3">
+            <button id="btn-category" class="px-3 py-1 bg-[#10375c] hover:bg-[#00264d] text-[#f5f0e6] text-xs font-semibold rounded-md border border-[#0b2238] shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg> Categorie: <span id="category-text">Alle Categorieën</span> <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-1"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <button id="btn-hint" class="px-3 py-1 bg-[#8c6d46] hover:bg-[#6e5434] text-[#f5f0e6] text-xs font-semibold rounded-md border border-[#523d24] transition flex items-center gap-1 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5
